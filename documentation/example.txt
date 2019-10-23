@@ -1,0 +1,10 @@
+    router
+    .route("/app/examples/division-by-zero")
+  //.handler((context) => throw "some exception to se another failure handler in action")
+    .handler((context) => context.put("value", 7~/0).next())
+    .handler((context) => context.response().end((_) => Text("Result: ${context.get("value")}")))
+    .failureHandler((context) =>
+        context.failure != null && context.failure is IntegerDivisionByZeroException ?
+        context.response().end((_) => Text("IntegerDivisionByZeroException")) :
+        context.next())//continue to another failure handler if presented
+    .failureHandler((context) => context.response().end((_) => Text("Error: ${ResponseStatusException(context.statusCode != -1 ? context.statusCode : 500, context.failure)}")));

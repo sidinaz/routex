@@ -1,0 +1,1 @@
+enum ContentType{ STRING, WIDGET_BUILDER, DYNAMIC, OBJECT }
