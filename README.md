@@ -17,7 +17,7 @@ Example app has built in parallel with framework, and it has over 20+ examples, 
 
 Each snippet in this document comes from example app:  
 
-<img src="documentation/images/routex_example_app.png" width="100%" />  
+<img src="https://raw.githubusercontent.com/sidinaz/routex/master/documentation/images/routex_example_app.png" width="100%" />  
 
 Try to notice relation between screens and code in example.dart file:  
 ```dart
