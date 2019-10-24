@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:routex/routex.dart';
 
+import 'apps/tips_app.dart';
 import 'controllers/countries_controller.dart';
 import 'controllers/examples_controller.dart';
 import 'controllers/test_controller.dart';
@@ -13,25 +14,8 @@ import 'theme/theme.dart';
 import 'widgets/login_screen.dart';
 import 'widgets/main_screen.dart';
 
-class AppWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    //To support hot reload in development, use RoutexNavigator.newInstance() to ensure new instance on each reload
-    //otherwise just use RoutexNavigator.shared and instance will be automatically created.
-    bindRouter(RoutexNavigator.newInstance().router);
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.instance,
-      home: RoutexNavigator.shared.get("/app/main")(context),
-    );
-  }
-}
-
-void main() {
-//  runApp(TipsApp());
-  runApp(AppWidget());
-}
+void main() => runApp(AppWidget());
+//void main() => runApp(TipsApp());
 
 void bindRouter(Router router) {
   //RoutexNavigator by default applies handlers for 404 and 500 error codes. (That behaviour is controlled by applyDefaultHandlers parameter)
@@ -76,3 +60,18 @@ void bindRouter(Router router) {
 
 //equivalent of .handler((context) => context.response().end((_) => MainScreen()))
 WidgetBuilder mainScreen(RoutingContext context) => (_) => MainScreen();
+
+class AppWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    //To support hot reload in development, use RoutexNavigator.newInstance() to ensure new instance on each reload
+    //otherwise just use RoutexNavigator.shared and instance will be automatically created.
+    bindRouter(RoutexNavigator.newInstance().router);
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.instance,
+      home: RoutexNavigator.shared.get("/app/main")(context),
+    );
+  }
+}

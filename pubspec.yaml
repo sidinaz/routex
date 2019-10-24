@@ -1,6 +1,6 @@
 name: routex
-description: Identify your logic with URI, apply any number of composable asynchronous or synchronous handlers using intuitive syntax and return anything as a result, all that with powerful and flexible error handling and testing.
-version: 1.0.0
+description: Identify your logic with URI, apply any number of composable asynchronous or synchronous handlers using intuitive syntax. Supports route navigation.
+version: 1.0.2
 author: Siddik Nazdrajic <s.nazdrajic@gmail.com>
 homepage: https://github.com/sidinaz/routex
 
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  rxdart:
+  rxdart: ^0.22.4
 
 dev_dependencies:
   flutter_test:

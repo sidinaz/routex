@@ -39,7 +39,6 @@ class RouterImpl implements Router {
     return this;
   }
 
-  @override
   Handler<RoutingContext> getErrorHandlerByStatusCode(int statusCode) =>
     _errorHandlers[statusCode];
 

@@ -6,24 +6,7 @@ Each snippet in this document comes from example app:
 
 Try to notice relation between screens and code in example.dart file:  
 ```dart
-class AppWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    //To support hot reload in development, use RoutexNavigator.newInstance() to ensure new instance on each reload
-    //otherwise just use RoutexNavigator.shared and instance will be automatically created.
-    bindRouter(RoutexNavigator.newInstance().router);
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.instance,
-      home: RoutexNavigator.shared.get("/app/main")(context),
-    );
-  }
-}
-
-void main() {
-  runApp(AppWidget());
-}
+void main() => runApp(AppWidget());
 
 void bindRouter(Router router) {
 
@@ -63,6 +46,21 @@ void bindRouter(Router router) {
 
 //equivalent of .handler((context) => context.response().end((_) => MainScreen()))
 WidgetBuilder mainScreen(RoutingContext context) => (_) => MainScreen();
+
+class AppWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    //To support hot reload in development, use RoutexNavigator.newInstance() to ensure new instance on each reload
+    //otherwise just use RoutexNavigator.shared and instance will be automatically created.
+    bindRouter(RoutexNavigator.newInstance().router);
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.instance,
+      home: RoutexNavigator.shared.get("/app/main")(context),
+    );
+  }
+}
 ``` 
 Main app content:  
 * Test tab shows how to start another screen for result using handler and ability to log out.  
