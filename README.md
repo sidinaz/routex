@@ -16,12 +16,14 @@ void main() => runApp(AppWidget());
 
 void bindRouter(Router router) {
 
-  router.route("/*").handler(AppComponentHandler()); //basic app dependencies, available on app level
+router
+    .route("/*")
+    .handler(AppComponentHandler()); //basic app dependencies, available on app level
 
   router
     .route("/app/*") //each route that starts with /app/ requires authenthicated user, and user component for di
     .handler(AuthHandler(redirectTo: "/public/login")) //redirects to /public/login if user isn't presented.
-    .handler((context) => context.put("sync_handler_between_two_asyncs", "Hello ${context.get<User>(User.key).name} :)").next())
+    .handler(syncHandlerBetweenTwoAsyncs)
     .handler(UserComponentHandler()); //creates user component
 
   router.route("/public/login").handler((context) =>
@@ -31,24 +33,24 @@ void bindRouter(Router router) {
     .route("/app/main")
   //.handler((context) => throw "Exceptions are propagated to failureHandlers or left to global error handlers.")
     .handler(mainScreen)
-    .failureHandler((context) => context.response().end((_) =>
+    .failureHandler((context) =>
+    context.response().end((_) =>
       Text("if some exception happens you can" +
-          " continue contex with any number of failure handlers, you can show error screen or simply omit failureHandlers and propagate error to global error handlers.")));
+        " continue contex with any number of failure handlers, or you can show error screen " +
+        "or simply omit failureHandlers and propagate error to global error handlers.")));
 
-  var testController = TestController();
-  testController.bindRouter(router);
+  List<Controller> controllers = [TestController(), CountriesController(), ExamplesController()];
 
-  var countriesController = CountriesController();
-  countriesController.bindRouter(router);
-
-  var examplesController = ExamplesController();
-  examplesController.bindRouter(router);
+  controllers.forEach((controller) => controller.bindRouter(router));
 
   //Controller is just convinient way to group related routes and handlers, it doesn't have any other purpose
   //    abstract class Controller {
   //    void bindRouter(Router router);
   //    }
 }
+
+void syncHandlerBetweenTwoAsyncs(RoutingContext context) =>
+  context.put("sync_handler_between_two_asyncs", "Hello ${context.get<User>(User.key).name} :)").next();
 
 //equivalent of .handler((context) => context.response().end((_) => MainScreen()))
 WidgetBuilder mainScreen(RoutingContext context) => (_) => MainScreen();
@@ -76,12 +78,12 @@ Main app content:
 ### About
 In handlers execute any code that can potentially change your main flow of execution or to get any dependencies and then create cleaner models to work with inherited widgets, streams pattern as you used to.
 
-Idea for handling events in that way comes from [Vertx](https://vertx.io/).  
+Idea for handling events in that way comes from [Vert.x](https://vertx.io/).  
 Routex in combination with dart and hot reload is worth of programmers attention.  
 It's amazing experience if you are interested in flutter and mobile development.
 
 The main part of Dart VM is an event loop. Independent pieces of code can register callback functions as event handlers for certain types of events.
-Vertx also achieves that in Java environment with [Vertx event loop](https://vertx.io/docs/vertx-core/java/#_reactor_and_multi_reactor).  
+Vert.x also achieves that in Java environment with [Vert.x event loop](https://vertx.io/docs/vertx-core/java/#_reactor_and_multi_reactor).  
 See Routex in action, 8 concurrent request were executed to populate ListView widget in examples tab of example application(even if one request is irresponsible and in total two are left to you to fix it for practice).  
 Typically one request is one screen but in Routex you can request for anything, not just screens-WidgetBuilder.
 

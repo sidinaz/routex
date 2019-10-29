@@ -5,9 +5,7 @@ import '../model/user.dart';
 class UserComponentHandler implements Handler<RoutingContext> {
   static UserComponent _component;
 
-  Future<UserComponent> _getComponent(User user) async => _component != null
-      ? _component
-      : _component = await UserComponent.create(user);
+  Future<UserComponent> _getComponent(User user) async => _component ??= await UserComponent.create(user);
 
   @override
   Future<void> handle(RoutingContext context) async {

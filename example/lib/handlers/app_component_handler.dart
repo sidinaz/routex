@@ -7,9 +7,7 @@ class AppComponentHandler implements Handler<RoutingContext> {
   //and any other component create every time when you request some route.
   static AppComponent _component;
 
-  Future<AppComponent> _getComponent() async => _component != null
-      ? _component
-      : _component = await AppComponent.create();
+  Future<AppComponent> _getComponent() async => _component ??= await AppComponent.create();
 
   @override
   Future<void> handle(RoutingContext context) async {
