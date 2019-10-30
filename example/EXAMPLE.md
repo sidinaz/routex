@@ -10,7 +10,7 @@ void main() => runApp(AppWidget());
 
 void bindRouter(Router router) {
 
-router
+  router
     .route("/*")
     .handler(AppComponentHandler()); //basic app dependencies, available on app level
 
