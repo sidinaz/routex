@@ -64,8 +64,10 @@ class RoutexNavigator {
   Future<WidgetBuilder> asWidgetBuilderFuture(String path, [Map<String, dynamic> params]) =>
     _router.handle(BaseRequest<WidgetBuilder>(path, params: params)).asFuture();
 
-  WidgetBuilder asWidgetBuilder(String path, [Map<String, dynamic> params]) =>
-      (ctx) => _futureObserver(asWidgetBuilderFuture(path, params));
+  WidgetBuilder asWidgetBuilder(String path, [Map<String, dynamic> params]) {
+    var future = asWidgetBuilderFuture(path, params);
+    return (ctx) => _futureObserver(future);
+  }
 
   WidgetBuilder get(String path, [Map<String, dynamic> params]) =>
     asWidgetBuilder(path, params);

@@ -13,7 +13,6 @@ class RoutexNavigatorErrorScreen extends StatelessWidget {
         title: Text(error.toString(),),
       ),
       body: Container(
-        color: Theme.of(context).scaffoldBackgroundColor,
         child: Center(
           child: Text(error.toString(), style: Theme
             .of(context)

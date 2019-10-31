@@ -16,7 +16,11 @@ class Observer<T> extends StatelessWidget {
   const Observer({this.onError, this.onSuccess, this.stream, this.onWaiting});
 
   Function get _defaultOnWaiting =>
-      (context) => Center(child: CircularProgressIndicator());
+      (context) =>
+        Container(
+          child: Center(child: CircularProgressIndicator()),
+          color: Theme.of(context).scaffoldBackgroundColor,
+        );
 
   Function get _defaultOnError =>
       (context, error) {

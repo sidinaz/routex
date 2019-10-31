@@ -1,9 +1,8 @@
 name: routex
 description: Identify your logic with URI, apply any number of composable asynchronous handlers using intuitive syntax. Supports route navigation. Vert.x like event handling in Flutter.
-version: 1.0.3
+version: 1.0.4
 author: Siddik Nazdrajic <s.nazdrajic@gmail.com>
 homepage: https://github.com/sidinaz/routex
-
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
