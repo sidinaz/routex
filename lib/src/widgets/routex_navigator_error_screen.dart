@@ -7,19 +7,17 @@ class RoutexNavigatorErrorScreen extends StatelessWidget {
   RoutexNavigatorErrorScreen(this.error);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(error.toString(),),
-      ),
-      body: Container(
-        child: Center(
-          child: Text(error.toString(), style: Theme
-            .of(context)
-            .textTheme
-            .title),
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "${error.statusCode}",
+          ),
         ),
-      ),
-    );
-  }
+        body: Container(
+          child: Center(
+            child: Text(error.toString(),
+                style: Theme.of(context).textTheme.title),
+          ),
+        ),
+      );
 }

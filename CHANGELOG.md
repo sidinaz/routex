@@ -1,3 +1,18 @@
+## 1.0.5
+* Route with regex:  
+```dart
+router
+  .routeWithRegex(r"^\/images\/(?<name>[a-zA-Z0-9]+).(jpg|png|gif|bmp)$")
+  .handler((context) => context.response().end(context.getParam("name")));
+```
+* Mount sub-router:  
+```dart
+//support old CountriesController
+  var subRouter = Router.router();
+  var countriesController = CountriesController();
+  countriesController.bindRouter(subRouter);
+  router.mountSubRouter("/v1", subRouter);
+```
 ## 1.0.4
 ### Important!  
 #### `RoutexNavigator` behaviour change.

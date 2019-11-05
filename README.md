@@ -2,7 +2,21 @@
 [![pub](https://img.shields.io/pub/v/routex?color=orange)](https://pub.dev/packages/routex) [![pub](https://img.shields.io/github/last-commit/sidinaz/routex)](https://pub.dev/packages/routex)  
  
 Identify your logic with URI, apply any number of composable asynchronous or synchronous handlers using intuitive syntax and return anything as a result, all that with powerful and flexible error handling and testing.
-
+## 1.0.5
+* Route with regex:  
+```dart
+router
+  .routeWithRegex(r"^\/images\/(?<name>[a-zA-Z0-9]+).(jpg|png|gif|bmp)$")
+  .handler((context) => context.response().end(context.getParam("name")));
+```
+* Mount sub-router:  
+```dart
+//support old CountriesController
+  var subRouter = Router.router();
+  var countriesController = CountriesController();
+  countriesController.bindRouter(subRouter);
+  router.mountSubRouter("/v1", subRouter);
+```
 ## Routex in action
 Example app has built in parallel with framework, and it has over 20+ examples, designed to show framework capabilities, composition, error handling, and RoutexNavigator - Routex consumer ready to use in your app.  
 
@@ -21,7 +35,7 @@ void bindRouter(Router router) {
     .handler(AppComponentHandler()); //basic app dependencies, available on app level
 
   router
-    .route("/app/*") //each route that starts with /app/ requires authenthicated user, and user component for di
+    .routeWithRegex(r"^(\/v1)?\/app/*") //each route that starts with /app/ or /v1/app requires authenthicated user, and user component for di
     .handler(AuthHandler(redirectTo: "/public/login")) //redirects to /public/login if user isn't presented.
     .handler(syncHandlerBetweenTwoAsyncs)
     .handler(UserComponentHandler()); //creates user component
@@ -39,9 +53,15 @@ void bindRouter(Router router) {
         " continue contex with any number of failure handlers, or you can show error screen " +
         "or simply omit failureHandlers and propagate error to global error handlers.")));
 
-  List<Controller> controllers = [TestController(), CountriesController(), ExamplesController()];
+  List<Controller> controllers = [TestController(), SearchCountriesController(), ExamplesController()];
 
   controllers.forEach((controller) => controller.bindRouter(router));
+  
+  //support old CountriesController, mountSubRouter
+    var subRouter = Router.router();
+    var countriesController = CountriesController();
+    countriesController.bindRouter(subRouter);
+    router.mountSubRouter("/v1", subRouter);
 
   //Controller is just convinient way to group related routes and handlers, it doesn't have any other purpose
   //    abstract class Controller {
@@ -84,7 +104,7 @@ It's amazing experience if you are interested in flutter and mobile development.
 
 The main part of Dart VM is an event loop. Independent pieces of code can register callback functions as event handlers for certain types of events.
 Vert.x also achieves that in Java environment with [Vert.x event loop](https://vertx.io/docs/vertx-core/java/#_reactor_and_multi_reactor).  
-See Routex in action, 8 concurrent request were executed to populate ListView widget in examples tab of example application(even if one request is irresponsible and in total two are left to you to fix it for practice).  
+See Routex in action, 10 concurrent request were executed to populate ListView widget in examples tab of example application(even if one request is irresponsible and in total two are left to you to fix it for practice).  
 Typically one request is one screen but in Routex you can request for anything, not just screens-WidgetBuilder.
 
 ### Handlers

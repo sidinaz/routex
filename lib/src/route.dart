@@ -8,4 +8,8 @@ abstract class Route {
   Route content(ContentType content);
 
   Set<ContentType> contents();
+
+  String getPath();
+
+  Route setRegexGroupsNames(List<String> groups);
 }

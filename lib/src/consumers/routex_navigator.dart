@@ -22,6 +22,7 @@ class RoutexNavigator {
   static void _addDefaultErrorHandlers(Router router) {
     _checkForErrorScreen();
 
+    router.errorHandler(400, (context) => context.response().end(_errorScreen(ResponseStatusException(400))));
     router.errorHandler(404, (context) => context.response().end(_errorScreen(ResponseStatusException(404))));
     router.errorHandler(500, (context) => context.response().end(_errorScreen(ResponseStatusException(500, context.failure))));
     //Failing context will result in future with error, so with this strategy you relay on success context even with _errorScreen

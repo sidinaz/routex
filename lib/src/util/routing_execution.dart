@@ -2,7 +2,6 @@ import 'package:routex/src/routing_context.dart';
 import 'package:rxdart/rxdart.dart';
 
 class RoutingExecution<T> {
-
   final RoutingContext _context;
 
   RoutingExecution(this._context);

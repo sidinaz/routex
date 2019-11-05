@@ -22,10 +22,10 @@ class RoutingContextImpl extends RoutingContextImplBase {
   Object failure;
 
   RoutingContextImpl(String mountPoint, this.router, RoutingRequest request,
-    Set<RouteImpl> routes)
-    :this._params = request.params(),
-      this._normalisedPath = request.path(),
-      super(routes, mountPoint, request) {
+      Set<RouteImpl> routes)
+      : this._params = request.params(),
+        this._normalisedPath = request.path(),
+        super(mountPoint, request, routes) {
     if (request.path().length == 0) {
       fail(400);
     } else {
@@ -39,9 +39,9 @@ class RoutingContextImpl extends RoutingContextImplBase {
   void fail(Object object) {
     if (object is int) {
       this.statusCode = object;
-    } else
-    if (Objects.cast<Error>(object, (error) => print(error.stackTrace)) !=
-      null) {
+    } else if (Objects.cast<Error>(
+            object, (error) => print(error.stackTrace)) !=
+        null) {
       this.statusCode = -1;
       this.failure = object;
     } else if (Objects.cast<Exception>(object) != null) {
@@ -56,12 +56,12 @@ class RoutingContextImpl extends RoutingContextImplBase {
 
   void doFail() {
     this.iter = router.iterator();
-    currentRoute = null;
+    currentroute = null;
     next();
   }
 
   @override
-  bool failed() => (failure != null) || (statusCode != (-1));
+  bool failed() => failure != null || statusCode != -1;
 
   @override
   String normalisedPath() {
@@ -92,7 +92,8 @@ class RoutingContextImpl extends RoutingContextImplBase {
       await unhandledFailure(statusCode, failure, router);
     } else {
       Handler<RoutingContext> handler = router.getErrorHandlerByStatusCode(404);
-      if (handler == null) { // Default 404 handling
+      if (handler == null) {
+        // Default 404 handling
         this.response().fail(ResponseStatusException(404));
       } else {
         await handler.handle(this);
@@ -131,5 +132,3 @@ class RoutingContextImpl extends RoutingContextImplBase {
     restart();
   }
 }
-
-

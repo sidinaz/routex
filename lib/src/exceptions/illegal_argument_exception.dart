@@ -1,3 +1,3 @@
 class IllegalArgumentException extends FormatException {
-  IllegalArgumentException(String message) :super(message);
+  IllegalArgumentException(String message) : super(message);
 }

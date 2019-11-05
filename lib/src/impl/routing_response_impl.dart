@@ -6,13 +6,11 @@ class BaseResponse<T> implements RoutingResponse<T> {
   Completer<T> _completer = Completer();
 
   void end(T model) {
-    _completer.complete(model);
+    if (!ended()) _completer.complete(model);
   }
 
   void fail(Object error) {
-    if (!ended()) {
-      _completer.completeError(error);
-    }
+    if (!ended()) _completer.completeError(error);
   }
 
   @override

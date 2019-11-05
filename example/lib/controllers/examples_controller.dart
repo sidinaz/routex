@@ -48,18 +48,29 @@ class ExamplesController implements Controller {
         .failureHandler((context) => context.response().end("Failure handler used to return successfull response, catched error: ${context.failure.toString()} || Code: ${context.statusCode}"));
 
     router
-        .route("/app/examples/putting-build_context-and-more-data")
+        .route("/app/examples/:message2/passing_data")
         .handler(contextInfo);
-
 
     router.route("/app/examples/simple-future")
     .handler(futureInAsyncHandlerExample)
     .handler(anotherFutureInSyncHandlerExample)
         .handler(getResponse);
+
+    router
+      .routeWithRegex(r"^\/images\/(?<name>[a-zA-Z0-9]+).(jpg|png|gif|bmp)$")
+      .handler((context) => context.response().end(context.getParam("name")));
+
+    //Make images request also available on /api/[route]....
+    var subRouter = Router.router();
+    subRouter
+      .routeWithRegex(r"^\/images\/(?<name>[a-zA-Z0-9]+).(jpg|png|gif|bmp)$")
+      .handler((context) => context.response().end(context.getParam("name")));
+
+    router.mountSubRouter("/api", subRouter);
   }
 
   void contextInfo(RoutingContext context){
-    context.response().end(context.getParam("message"));
+    context.response().end(context.getParam("message") + "\n" + context.getParam("message2"));
   }
 
   Future getResponse(RoutingContext context) async => context.response().end(await Future.delayed(Duration(milliseconds: 1), () => "Future async, sync..."));

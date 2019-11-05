@@ -3,6 +3,7 @@ import 'package:routex/routex.dart';
 
 import 'controllers/countries_controller.dart';
 import 'controllers/examples_controller.dart';
+import 'controllers/search_countries_controller.dart';
 import 'controllers/test_controller.dart';
 import 'di/app_component.dart';
 import 'handlers/app_component_handler.dart';
@@ -28,7 +29,7 @@ void bindRouter(Router router) {
     .handler(AppComponentHandler()); //basic app dependencies, available on app level
 
   router
-    .route("/app/*") //each route that starts with /app/ requires authenthicated user, and user component for di
+    .routeWithRegex(r"^(\/v1)?\/app/*") //each route that starts with /app/ or /v1/app requires authenthicated user, and user component for di
     .handler(AuthHandler(redirectTo: "/public/login")) //redirects to /public/login if user isn't presented.
     .handler(syncHandlerBetweenTwoAsyncs)
     .handler(UserComponentHandler()); //creates user component
@@ -46,9 +47,15 @@ void bindRouter(Router router) {
         " continue contex with any number of failure handlers, or you can show error screen " +
         "or simply omit failureHandlers and propagate error to global error handlers.")));
 
-  List<Controller> controllers = [TestController(), CountriesController(), ExamplesController()];
+  List<Controller> controllers = [TestController(), SearchCountriesController(), ExamplesController()];
 
   controllers.forEach((controller) => controller.bindRouter(router));
+
+  //support old CountriesController, mountSubRouter
+  var subRouter = Router.router();
+  var countriesController = CountriesController();
+  countriesController.bindRouter(subRouter);
+  router.mountSubRouter("/v1", subRouter);
 
   //Controller is just convinient way to group related routes and handlers, it doesn't have any other purpose
   //    abstract class Controller {

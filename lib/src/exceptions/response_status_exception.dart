@@ -11,7 +11,7 @@ class ResponseStatusException implements Exception {
     String message = "ResponseStatusException: $statusCode";
     if (failure != null) {
       if (Objects.cast<Error>(failure, (error) => print(error.stackTrace)) !=
-        null) {
+          null) {
         message += failure.toString();
       } else if (Objects.cast<Exception>(failure) != null) {
         message += failure.toString();

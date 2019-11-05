@@ -10,7 +10,7 @@ class CountriesViewModel {
   final SelectionMode selectionMode;
   // ignore: close_sinks
   final BehaviorSubject<bool> hasSelection = BehaviorSubject.seeded(false);
-  final BehaviorSubject<List<String>> selectedCountries = BehaviorSubject
+  final BehaviorSubject<List<CountryPresentation>> selectedCountries = BehaviorSubject
     .seeded([]);
 
   Observable<List<CountryPresentation>> get countries =>
@@ -32,7 +32,7 @@ class CountriesViewModel {
     var subscription = _filteredCountries
       .listen((items) => _filteredCountriesSubject.value = items);
     var subscription2 = _filteredCountriesSubject
-      .map((cts) => cts.where((c) => c.isSelected).map((c) => c.name).toList())
+      .map((cts) => cts.where((c) => c.isSelected).toList())
       .listen((hs) => selectedCountries.value = hs);
     var subscription3 = selectedCountries
       .map((cts) => cts.length > 0)

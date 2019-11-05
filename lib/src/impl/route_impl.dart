@@ -11,40 +11,103 @@ import 'package:routex/src/route.dart';
 import 'package:routex/src/routing_context.dart';
 import 'package:routex/src/routing_request.dart';
 
-
+//
 class RouteImpl implements Route {
   final RouterImpl _router;
   int order;
-  bool useNormalisedPath = true;
   bool enabled = true;
 
+  String _path;
+  final Set<ContentType> _contents = HashSet();
+  bool exactPath;
   List<Handler<RoutingContext>> contextHandlers = [];
   List<Handler<RoutingContext>> failureHandlers = [];
-  String _path;
-  bool exactPath;
-  final Set<ContentType> _contents = HashSet();
+  Pattern pattern;
+  bool useNormalisedPath = true;
+  List<String> groups;
+  List<String> namedGroupsInRegex = [];
 
-  RouteImpl(this._router, this.order, String path, {ContentType content}) {
+  RouteImpl(this._router, this.order,
+      {String path, String regex, ContentType content}) {
     if (content != null) {
       _contents.add(content);
     }
-    checkPath(path);
-    setPath(path);
-  }
 
-  void checkPath(String path) {
-    if (("" == path) || (path.codeUnitAt(0) != '/'.codeUnitAt(0))) {
-      throw new IllegalArgumentException("Path must start with /");
+    if (path != null) {
+      checkPath(path);
+      setPath(path);
+    } else if (regex != null) {
+      setRegex(regex);
     }
   }
 
+  void setRegex(String regex) {
+    pattern = RegExp(regex);
+    List<String> namedGroups = findNamedGroups(regex);
+    if (namedGroups.isNotEmpty) {
+      namedGroupsInRegex.addAll(namedGroups);
+    }
+  }
+
+  List<String> findNamedGroups(String path) {
+    List<String> result = [];
+    Pattern pattern = RegExp(r"\(\?<([a-zA-Z][a-zA-Z0-9]*)>");
+    Iterable<Match> matches = pattern.allMatches(path);
+    for (Match m in matches) result.add(m.group(1));
+
+    return result;
+  }
+
+  // ignore: non_constant_identifier_names
+  static final Pattern RE_OPERATORS_NO_STAR = RegExp(r"([\(\)\$\+\.])");
+
+  // ignore: non_constant_identifier_names
+  static final Pattern RE_TOKEN_SEARCH = RegExp(r":([A-Za-z][A-Za-z0-9_]*)");
+
+  void createPatternRegex(String path) {
+    path = path.replaceAllMapped(
+        RE_OPERATORS_NO_STAR, (Match m) => "\\${m.group(1)}");
+
+    if (path.codeUnitAt(path.length - 1) == '*'.codeUnitAt(0)) {
+      path = path.substring(0, path.length - 1) + ".*";
+    }
+
+    //IZDVOJITI
+    groups = [];
+    int index = 0;
+    path = path.replaceAllMapped(RE_TOKEN_SEARCH, (Match m) {
+      String param = "p$index";
+      String group = m.group(0).substring(1);
+      if (groups.contains(group))
+        throw Exception("Cannot use identifier " +
+            group +
+            " more than once in pattern string");
+
+      groups.add(group);
+      index++;
+      return "(?<" + param + ">[^/]+)";
+    });
+
+    pattern = RegExp(path);
+  }
+
+  void checkPath(String path) {
+    if (("" == path) || (path.codeUnitAt(0) != '/'.codeUnitAt(0)))
+      throw IllegalArgumentException("Path must start with /");
+  }
+
   void setPath(String path) {
-    if (path.codeUnitAt(path.length - 1) != '*'.codeUnitAt(0)) {
-      exactPath = true;
+    if (path.indexOf(':') != -1) {
+      createPatternRegex(path);
       this._path = path;
     } else {
-      exactPath = false;
-      this._path = path.substring(0, path.length - 1);
+      if (path.codeUnitAt(path.length - 1) != '*'.codeUnitAt(0)) {
+        exactPath = true;
+        this._path = path;
+      } else {
+        exactPath = false;
+        this._path = path.substring(0, path.length - 1);
+      }
     }
   }
 
@@ -64,16 +127,23 @@ class RouteImpl implements Route {
     return this;
   }
 
-
   @override
   Route content(ContentType content) {
     _contents.add(content);
     return this;
   }
 
-
   @override
   Set<ContentType> contents() => _contents;
+
+  @override
+  String getPath() => _path;
+
+  @override
+  Route setRegexGroupsNames(List<String> groups) {
+    this.groups = groups;
+    return this;
+  }
 
   @override
   Route failureHandler(Object handler) {
@@ -84,14 +154,14 @@ class RouteImpl implements Route {
 
   @override
   String toString() =>
-    'RouteImpl{router: $_router, order: $order, contextHandlers: $contextHandlers, failureHandlers: $failureHandlers, path: $_path, exactPath: $exactPath, added: $added}';
+      'RouteImpl{router: $_router, order: $order, contextHandlers: $contextHandlers, failureHandlers: $failureHandlers, path: $_path, exactPath: $exactPath, added: $added}';
 
 //implements Route
   bool hasNextContextHandler(RoutingContextImplBase context) =>
-    context.currentRouteNextHandlerIndex() < contextHandlers.length;
+      context.currentRouteNextHandlerIndex() < contextHandlers.length;
 
   bool hasNextFailureHandler(RoutingContextImplBase context) =>
-    context.currentRouteNextFailureHandlerIndex() < failureHandlers.length;
+      context.currentRouteNextFailureHandlerIndex() < failureHandlers.length;
 
   RouterImpl router() => _router;
 
@@ -99,7 +169,7 @@ class RouteImpl implements Route {
     Handler<RoutingContext> contextHandler;
 
     var currentRouteNextHandlerIndex =
-      context.currentRouteNextHandlerIndex() - 1;
+        context.currentRouteNextHandlerIndex() - 1;
     contextHandler = contextHandlers[currentRouteNextHandlerIndex];
     await contextHandler.handle(context);
   }
@@ -107,14 +177,14 @@ class RouteImpl implements Route {
   Future<void> handleFailure(RoutingContextImplBase context) async {
     Handler<RoutingContext> failureHandler;
     failureHandler =
-    failureHandlers[context.currentRouteNextFailureHandlerIndex() - 1];
+        failureHandlers[context.currentRouteNextFailureHandlerIndex() - 1];
     await failureHandler.handle(context);
   }
 
-  bool matches(RoutingContextImplBase context, String mountPoint,
-    bool failure) {
+  bool matches(
+      RoutingContextImplBase context, String mountPoint, bool failure) {
     if ((failure && (!hasNextFailureHandler(context))) ||
-      ((!failure) && (!hasNextContextHandler(context)))) {
+        ((!failure) && (!hasNextContextHandler(context)))) {
       return false;
     }
 
@@ -126,15 +196,63 @@ class RouteImpl implements Route {
     if (_contents.isNotEmpty && !_contents.contains(request.content())) {
       return false;
     }
-    if ((_path != null) && (!pathMatches(mountPoint, context))) {
+
+    if (_path != null && pattern == null && !pathMatches(mountPoint, context)) {
       return false;
+    }
+
+    if (pattern != null) {
+      String path = useNormalisedPath
+          ? context.normalisedPath()
+          : context.request().path();
+      if (mountPoint != null) {
+        path = path.substring(mountPoint.length);
+      }
+
+      Iterable<Match> matches = pattern.allMatches(path);
+      if (matches.isNotEmpty) {
+        for (Match m in matches) {
+          if (m.groupCount > 0) {
+            if (groups != null) {
+              groups.asMap().forEach((index, k) {
+                String undecodedValue;
+                try {
+                  var key = namedGroupsInRegex.indexOf("p$index");
+                  if (key != -1)
+                    undecodedValue = m.group(key + 1);
+                  else
+                    undecodedValue = m.group(index + 1);
+                } catch (error) {
+                  undecodedValue = m.group(index + 1);
+                }
+                addPathParam(context, k, undecodedValue);
+              });
+            } else {
+              namedGroupsInRegex.asMap().forEach((index, namedGroup) {
+                final String namedGroupValue = m.group(index + 1);
+                addPathParam(context, namedGroup, namedGroupValue);
+              });
+
+              for (int i = 0; i < m.groupCount; i++) {
+                addPathParam(context, "param$i", m.group(i + 1));
+              }
+            }
+          }
+        }
+      } else {
+        return false;
+      }
     }
 
     return true;
   }
 
+  void addPathParam(RoutingContext context, String name, String value) {
+    context.params()[name] = value;
+  }
+
   bool pathMatches(String mountPoint, RoutingContext context) {
-    String thePath = ((mountPoint == null) ? _path : (mountPoint + _path));
+    String thePath = mountPoint == null ? _path : mountPoint + _path;
     String requestPath;
     if (useNormalisedPath) {
       requestPath = context.normalisedPath();
@@ -210,8 +328,7 @@ class _WidgetBuilderNonVoidAction implements Action {
     try {
       return _handler(context);
     } catch (error) {
-      throw "Function that creates widgetBuilder for: ${context.request()
-        .path()}\n is throwing error: $error";
+      throw "Function that creates widgetBuilder for: ${context.request().path()}\n is throwing error: $error";
     }
   }
 
@@ -230,8 +347,7 @@ class _WidgetNonVoidAction implements Action {
     try {
       return _handler(context);
     } catch (error) {
-      throw "Function that creates widget for: ${context.request()
-        .path()}\n is throwing error: $error";
+      throw "Function that creates widget for: ${context.request().path()}\n is throwing error: $error";
     }
   }
 
@@ -243,8 +359,10 @@ class _WidgetNonVoidAction implements Action {
 
 typedef AsyncRoutingContextHandler = Future<void> Function(RoutingContext);
 typedef SyncRoutingContextHandler = void Function(RoutingContext);
-typedef WidgetBuilderNonVoidContextHandler = ui.WidgetBuilder Function(RoutingContext context);
-typedef WidgetNonVoidContextHandler = ui.Widget Function(RoutingContext context);
+typedef WidgetBuilderNonVoidContextHandler = ui.WidgetBuilder Function(
+    RoutingContext context);
+typedef WidgetNonVoidContextHandler = ui.Widget Function(
+    RoutingContext context);
 
 abstract class Action implements Handler<RoutingContext> {
   factory Action(Object handler) {
@@ -260,6 +378,7 @@ abstract class Action implements Handler<RoutingContext> {
       return _AsyncActionImpl(handler);
     }
     return _SyncAction((context) =>
-      context.fail(IllegalArgumentException("Check your handler: $handler")));
+        context.fail(IllegalArgumentException("Check your handler: $handler")));
+//
   }
 }

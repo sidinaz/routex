@@ -75,9 +75,21 @@ class ExamplesSource {
       .onErrorResume((error) => Observable.just(BasicExample.withError(error)));
 
     Observable<BasicExample> puttingMoreData = router
-      .handle(BaseRequest<String>("/app/examples/putting-build_context-and-more-data", params: {
+      .handle(BaseRequest<String>("/app/examples/another-message/passing_data", params: {
       "message": "RoutingContext has these two structures to put data, Map<String, dynamic> data(), Map<String, dynamic> params(), and get(), getParam() methods, use params for external world and data()-> get for handlers internally."
     }))
+      .asStream()
+      .map((response) => BasicExample.withResponse(response))
+      .onErrorResume((error) => Observable.just(BasicExample.withError(error)));
+
+    Observable<BasicExample> regexExample = router
+      .handle(BaseRequest<String>("/images/autumn.jpg"))
+      .asStream()
+      .map((response) => BasicExample.withResponse(response))
+      .onErrorResume((error) => Observable.just(BasicExample.withError(error)));
+
+    Observable<BasicExample> regexExampleSubRouterApi = router
+      .handle(BaseRequest<String>("/api/images/autumn.jpg"))
       .asStream()
       .map((response) => BasicExample.withResponse(response))
       .onErrorResume((error) => Observable.just(BasicExample.withError(error)));
@@ -90,7 +102,9 @@ class ExamplesSource {
       irresponsibleRequestExample,
       errorFailingRequestExample,
       simpleFutureRequestExample,
-      puttingMoreData
+      puttingMoreData,
+      regexExample,
+      regexExampleSubRouterApi
     ]));
     //
   }

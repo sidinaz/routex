@@ -6,7 +6,7 @@ import 'package:routex/src/routing_response.dart';
 
 class BaseRequest<T> extends RoutingRequestImpl<T> {
   BaseRequest(String path, {Map<String, dynamic> params})
-    : super(path, params: params);
+      : super(path, params: params);
 }
 
 class RoutingRequestImpl<T> implements RoutingRequest<T> {
@@ -16,12 +16,11 @@ class RoutingRequestImpl<T> implements RoutingRequest<T> {
   final Map<String, dynamic> _params;
 
   RoutingRequestImpl(this._path,
-    {BuildContext contex, Map<String, dynamic> params})
-    : this._params = params == null ? Map() : params,
-      this._contentType = _contentFromType<T>();
+      {BuildContext contex, Map<String, dynamic> params})
+      : this._params = params == null ? Map() : params,
+        this._contentType = _contentFromType<T>();
 
   void setPath(String path) => _path = path;
-
 
   @override
   String path() => _path;

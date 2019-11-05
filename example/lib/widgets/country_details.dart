@@ -15,10 +15,21 @@ class CountryDetailsScreen extends StatelessWidget {
       ),
       body: Container(
         color: !country.isSelected
-      ? Theme.of(context).primaryColor
+            ? Theme.of(context).primaryColor
             : Theme.of(context).accentColor,
         child: Center(
-            child: Text(country.name,style: Theme.of(context).textTheme.body1,)
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                country.name,
+                style: Theme.of(context).textTheme.body1,
+              ),
+              Image.network(
+                'https://www.countryflags.io/${country.isoCode}/flat/64.png',
+              )
+            ],
+          ),
         ),
       ),
     );

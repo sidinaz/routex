@@ -1,7 +1,8 @@
 class Objects {
   static T requireNonNull<T>(T obj, [String message]) {
-    return obj != null ? obj : throw FormatException(
-      message != null ? message : "Object is null");
+    return obj != null
+        ? obj
+        : throw FormatException(message != null ? message : "Object is null");
   }
 
   static cast<T>(Object obj, [Function(T) run]) {

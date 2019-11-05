@@ -3,6 +3,7 @@ import 'package:routex/src/exceptions/response_status_exception.dart';
 import 'package:routex/src/handler.dart';
 import 'package:routex/src/impl/route_impl.dart';
 import 'package:routex/src/impl/router_impl.dart';
+import 'package:routex/src/route.dart';
 import 'package:routex/src/routing_context.dart';
 import 'package:routex/src/routing_request.dart';
 import 'package:routex/src/util/atomic_integer.dart';
@@ -13,28 +14,33 @@ abstract class RoutingContextImplBase extends RoutingContext {
 
   Iterator<RouteImpl> iter;
   final String _mountPoint;
-  RouteImpl currentRoute;
+  RouteImpl currentroute;
   AtomicInteger _currentRouteNextHandlerIndex;
   AtomicInteger _currentRouteNextFailureHandlerIndex;
 
-  RoutingContextImplBase(this.routes, this._mountPoint, this._request)
-    : this.iter = routes.iterator {
+  RoutingContextImplBase(
+    this._mountPoint,
+    this._request,
+    this.routes,
+  ) : this.iter = routes.iterator {
     _currentRouteNextHandlerIndex = new AtomicInteger();
     _currentRouteNextFailureHandlerIndex = new AtomicInteger();
   }
 
   String mountPoint() => _mountPoint;
 
+  @override
+  Route currentRoute() => currentroute;
 
   int currentRouteNextHandlerIndex() =>
-    _currentRouteNextHandlerIndex.intValue();
+      _currentRouteNextHandlerIndex.intValue();
 
   int currentRouteNextFailureHandlerIndex() =>
-    _currentRouteNextFailureHandlerIndex.intValue();
+      _currentRouteNextFailureHandlerIndex.intValue();
 
   void restart() {
     this.iter = routes.iterator;
-    currentRoute = null;
+    currentroute = null;
     next();
   }
 
@@ -42,25 +48,25 @@ abstract class RoutingContextImplBase extends RoutingContext {
   RoutingRequest request() => _request;
 
   Future<bool> iterateNext() async {
-    bool failedd = failed();
-    if (currentRoute != null) {
+    bool _failed = failed();
+    if (currentroute != null) {
       try {
-        if ((!failedd) && currentRoute.hasNextContextHandler(this)) {
+        if ((!_failed) && currentroute.hasNextContextHandler(this)) {
           _currentRouteNextHandlerIndex.incrementAndGet();
-          await currentRoute.handleContext(this);
+          await currentroute.handleContext(this);
           return true;
         } else {
-          if (failedd && currentRoute.hasNextFailureHandler(this)) {
+          if (_failed && currentroute.hasNextFailureHandler(this)) {
             _currentRouteNextFailureHandlerIndex.incrementAndGet();
-            await currentRoute.handleFailure(this);
+            await currentroute.handleFailure(this);
             return true;
           }
         }
       } catch (t) {
-        if (!failedd) {
+        if (!_failed) {
           fail(t);
         } else {
-          await unhandledFailure(-1, t, currentRoute.router());
+          await unhandledFailure(-1, t, currentroute.router());
         }
         return true;
       }
@@ -70,20 +76,20 @@ abstract class RoutingContextImplBase extends RoutingContext {
       _currentRouteNextHandlerIndex.set(0);
       _currentRouteNextFailureHandlerIndex.set(0);
       try {
-        if (route.matches(this, mountPoint(), failedd)) {
+        if (route.matches(this, mountPoint(), _failed)) {
           try {
-            currentRoute = route;
-            if (failedd && currentRoute.hasNextFailureHandler(this)) {
+            currentroute = route;
+            if (_failed && currentroute.hasNextFailureHandler(this)) {
               _currentRouteNextFailureHandlerIndex.incrementAndGet();
               await route.handleFailure(this);
-            } else if (currentRoute.hasNextContextHandler(this)) {
+            } else if (currentroute.hasNextContextHandler(this)) {
               _currentRouteNextHandlerIndex.incrementAndGet();
               await route.handleContext(this);
             } else {
               continue;
             }
           } catch (t) {
-            if (!failedd) {
+            if (!_failed) {
               fail(t);
             } else {
               await unhandledFailure(-1, t, route.router());
@@ -93,19 +99,22 @@ abstract class RoutingContextImplBase extends RoutingContext {
         }
       } catch (e) {
         if (!this.response().ended())
-          await unhandledFailure((e as IllegalArgumentException) != null ? 400 : -1, e, route.router());
+          await unhandledFailure(
+              (e is IllegalArgumentException) != null ? 400 : -1,
+              e,
+              route.router());
         return true;
       }
     }
     return false;
   }
 
-  Future<void> unhandledFailure(int statusCode, Object failure,
-    RouterImpl router) async {
+  Future<void> unhandledFailure(
+      int statusCode, Object failure, RouterImpl router) async {
     int code = statusCode != -1 ? statusCode : 500;
 
-    Handler<RoutingContext> errorHandler = router.getErrorHandlerByStatusCode(
-      code);
+    Handler<RoutingContext> errorHandler =
+        router.getErrorHandlerByStatusCode(code);
     if (errorHandler == null) {
       this.response().fail(ResponseStatusException(code, failure));
     } else {

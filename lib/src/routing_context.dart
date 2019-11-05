@@ -1,8 +1,8 @@
+import 'package:routex/src/route.dart';
 import 'package:routex/src/routing_request.dart';
 import 'package:routex/src/routing_response.dart';
 
 abstract class RoutingContext<E> {
-
   RoutingRequest request();
 
   RoutingResponse response();
@@ -31,4 +31,7 @@ abstract class RoutingContext<E> {
 
   void reroute(String path);
 
+  String mountPoint();
+
+  Route currentRoute();
 }
