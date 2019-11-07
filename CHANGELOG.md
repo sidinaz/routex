@@ -1,3 +1,25 @@
+## 1.0.6
+* Navigator customization options
+```dart
+RoutexNavigator navigator = RoutexNavigator.newInstance(navigator: CustomNavigator());
+
+class CustomNavigator extends RoutexNavigator {
+  
+  @override
+  Future<T> push<T extends Object>(String path, BuildContext context,
+          [Map<String, dynamic> params]) =>
+      Navigator.push(
+        context,
+        _pageRoute(builder: asWidgetBuilder(path, params)),
+      );
+  
+  PageRoute<T> _pageRoute<T>({@required WidgetBuilder builder}) =>
+      Platform.isIOS
+          ? CupertinoPageRoute(builder: builder)
+          : MaterialPageRoute(builder: builder);
+  
+}
+```
 ## 1.0.5
 * Route with regex:  
 ```dart

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:routex/routex.dart';
 
+import 'apps/navigator_customization/custom_navigator.dart';
+import 'apps/navigator_customization_app.dart';
 import 'controllers/countries_controller.dart';
 import 'controllers/examples_controller.dart';
 import 'controllers/search_countries_controller.dart';
@@ -14,6 +16,7 @@ import 'theme/theme.dart';
 import 'widgets/login_screen.dart';
 import 'widgets/main_screen.dart';
 
+//void main() => runApp(NavigatorCustomizationApp());
 void main() => runApp(AppWidget());
 //void main() => runApp(TipsApp());
 
@@ -74,7 +77,7 @@ class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     //To support hot reload in development, use RoutexNavigator.newInstance() to ensure new instance on each reload
     //otherwise just use RoutexNavigator.shared and instance will be automatically created.
-    bindRouter(RoutexNavigator.newInstance().router);
+    bindRouter(RoutexNavigator.newInstance(navigator: CustomNavigator()).router);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

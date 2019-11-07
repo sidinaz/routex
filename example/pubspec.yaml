@@ -22,6 +22,7 @@ dependencies:
 
   rxdart:
   simple_search_bar: ^0.1.7
+  flutter_platform_widgets: ^0.20.2
 
   routex:
     path: ../

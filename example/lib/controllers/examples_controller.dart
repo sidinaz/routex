@@ -38,7 +38,7 @@ class ExamplesController implements Controller {
 
     router
         .route("/app/examples/irresponsible")
-        .handler((context) => print("Context neither complete or fails. (Missing context.next() or context.fail(error) call.)"))
+        .handler((context) => context.put("___", "Context neither complete or fails. (Missing context.next() or context.fail(error) call.)"))
         .handler((context) => context.response().end("This will not be executed without fix"));
 
     router

@@ -15,7 +15,6 @@ import 'package:routex/src/util/routing_execution.dart';
 
 import 'routing_context_wrapper.dart';
 
-
 class RouterImpl implements Router {
   final Set<RouteImpl> routes = SplayTreeSet(routeComparator);
   final AtomicInteger orderSequence = new AtomicInteger();
@@ -43,71 +42,81 @@ class RouterImpl implements Router {
   }
 
   Handler<RoutingContext> getErrorHandlerByStatusCode(int statusCode) =>
-    _errorHandlers[statusCode];
+      _errorHandlers[statusCode];
 
   @override
   Route route(String path) =>
-    RouteImpl(this, orderSequence.getAndIncrement(), path: path);
-
+      RouteImpl(this, orderSequence.getAndIncrement(), path: path);
 
   @override
   Route routeWithRegex(String regex) =>
-    RouteImpl(this, orderSequence.getAndIncrement(), regex: regex);
+      RouteImpl(this, orderSequence.getAndIncrement(), regex: regex);
 
   @override
-  Route wb(String path) =>
-    RouteImpl(this, orderSequence.getAndIncrement(), path: path,
-      content: ContentType.WIDGET_BUILDER);
+  Route wb(String path) => RouteImpl(this, orderSequence.getAndIncrement(),
+      path: path, content: ContentType.WIDGET_BUILDER);
 
   @override
-  Route string(String path) =>
-    RouteImpl(
-      this, orderSequence.getAndIncrement(), path: path, content: ContentType.STRING);
+  Route string(String path) => RouteImpl(this, orderSequence.getAndIncrement(),
+      path: path, content: ContentType.STRING);
 
   @override
-  Route dynamic(String path) =>
-    RouteImpl(this, orderSequence.getAndIncrement(), path: path,
-      content: ContentType.DYNAMIC);
+  Route dynamic(String path) => RouteImpl(this, orderSequence.getAndIncrement(),
+      path: path, content: ContentType.DYNAMIC);
 
   @override
-  Route object(String path) =>
-    RouteImpl(
-      this, orderSequence.getAndIncrement(), path: path, content: ContentType.OBJECT);
+  Route object(String path) => RouteImpl(this, orderSequence.getAndIncrement(),
+      path: path, content: ContentType.OBJECT);
 
   void add(RouteImpl route) {
     routes.add(route);
   }
 
   @override
-  RoutingExecution<T> handle<T>(RoutingRequest request) => RoutingExecution<T>(RoutingContextImpl(null, this, request, routes));
+  RoutingExecution<T> handle<T>(RoutingRequest request) =>
+      RoutingExecution<T>(RoutingContextImpl(null, this, request, routes));
 
   Iterator<RouteImpl> iterator() => routes.iterator;
 
   @override
   Router mountSubRouter(String mountPoint, Router subRouter) {
     if (mountPoint.endsWith("*")) {
-      throw new IllegalArgumentException("Don't include * when mounting subrouter");
+      throw new IllegalArgumentException(
+          "Don't include * when mounting subrouter");
     }
     if (mountPoint.contains(":")) {
-      throw new IllegalArgumentException("Can't use patterns in subrouter mounts");
+      throw new IllegalArgumentException(
+          "Can't use patterns in subrouter mounts");
     }
-    route(mountPoint + "*").handler(subRouter.handleContext).failureHandler(subRouter.handleFailure);
+    route(mountPoint + "*")
+        .handler(subRouter.handleContext)
+        .failureHandler(subRouter.handleFailure);
     return this;
   }
 
   @override
-  void handleFailure(RoutingContext ctx) => RoutingContextWrapper(getAndCheckRoutePath(ctx), ctx.request(), routes, ctx).next();
+  void handleFailure(RoutingContext ctx) => RoutingContextWrapper(
+        getAndCheckRoutePath(ctx),
+        ctx.request(),
+        routes,
+        ctx,
+      ).next();
 
   @override
-  void handleContext(RoutingContext ctx) => RoutingContextWrapper(getAndCheckRoutePath(ctx), ctx.request(), routes, ctx).next();
+  void handleContext(RoutingContext ctx) => RoutingContextWrapper(
+        getAndCheckRoutePath(ctx),
+        ctx.request(),
+        routes,
+        ctx,
+      ).next();
 
   String getAndCheckRoutePath(RoutingContext ctx) {
     Route currentRoute = ctx.currentRoute();
     String path = currentRoute.getPath();
     if (path == null) {
-      throw Exception("Sub routers must be mounted on constant paths (no regex or patterns)");
+      throw Exception(
+          "Sub routers must be mounted on constant paths (no regex or patterns)");
     }
     return path;
   }
-
 }
