@@ -16,19 +16,19 @@ class TestController implements Controller{
     router
       .route("/app/test/press-for-success-back-for-failure")
       .handler((context) =>
-      context.response().end((bc) => _template("Press or back", bc, TestClickForSuccessBackForFailureScreen())));
+      context.response().end((_) => _template("Press or back", TestClickForSuccessBackForFailureScreen())));
 
     router
       .route("/app/test/result")
       .handler(showScreenForResultHandler)
       .handler((context) =>
-      context.response().end((bc) => _template("Success", bc, TestResultScreen())))
+      context.response().end((_) => _template("Success", TestResultScreen())))
       .failureHandler((context) => context.reroute("/app/test/failure"));
 
     router
       .route("/app/test/failure")
       .handler((context) =>
-      context.response().end((bc) => _template("Failure, no result", bc, TestFailureScreen())));
+      context.response().end((_) => _template("Failure, no result", TestFailureScreen())));
   }
 
   Future showScreenForResultHandler(RoutingContext context) async {
@@ -46,17 +46,15 @@ class TestController implements Controller{
     var appComponent = context.get<AppComponent>(AppComponent.key);
     Objects.requireNonNull(appComponent);
 
-    context.response().end((bc) => _template("Test", bc, TestStartScreen(goToResultScreen,logoutAction:(){
+    context.response().end((bc) => _template("Test", TestStartScreen(logoutAction:(){
       appComponent.setUser(null);
       //push to app main but we will be redirected to the login screen.
       RoutexNavigator.shared.pushReplacement("/app/main", bc);
     })));
   }
 
-  void goToResultScreen(BuildContext context) =>
-    RoutexNavigator.shared.push("/app/test/result", context, { "build_context": context});
 
-  Widget _template(String title, BuildContext context, Widget content) =>
+  Widget _template(String title, Widget content) =>
     Scaffold(
       appBar: AppBar(
         title: Text(title)),

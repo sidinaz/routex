@@ -5,6 +5,7 @@ import 'apps/navigator_customization/custom_navigator.dart';
 import 'apps/navigator_customization_app.dart';
 import 'controllers/countries_controller.dart';
 import 'controllers/examples_controller.dart';
+import 'controllers/posts_controller.dart';
 import 'controllers/search_countries_controller.dart';
 import 'controllers/test_controller.dart';
 import 'di/app_component.dart';
@@ -50,7 +51,7 @@ void bindRouter(Router router) {
         " continue contex with any number of failure handlers, or you can show error screen " +
         "or simply omit failureHandlers and propagate error to global error handlers.")));
 
-  List<Controller> controllers = [TestController(), SearchCountriesController(), ExamplesController()];
+  List<Controller> controllers = [TestController(), SearchCountriesController(), ExamplesController(),PostsController()];
 
   controllers.forEach((controller) => controller.bindRouter(router));
 
@@ -75,6 +76,7 @@ WidgetBuilder mainScreen(RoutingContext context) => (_) => MainScreen();
 class AppWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print("App start");
     //To support hot reload in development, use RoutexNavigator.newInstance() to ensure new instance on each reload
     //otherwise just use RoutexNavigator.shared and instance will be automatically created.
     bindRouter(RoutexNavigator.newInstance(navigator: CustomNavigator()).router);
@@ -83,6 +85,7 @@ class AppWidget extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.instance,
       home: RoutexNavigator.shared.get("/app/main")(context),
+//      home: RoutexNavigator.shared.get("/app/posts/")(context),
     );
   }
 }

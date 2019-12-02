@@ -1,3 +1,4 @@
+import 'package:example/model/countries_manager.dart';
 import 'package:routex/routex.dart';
 import '../di/user_component.dart';
 import '../model/country.dart';
@@ -18,7 +19,7 @@ class SearchCountriesController implements Controller {
   }
 
   void countriesHandler(RoutingContext context) {
-    var countriesManager = context.get<UserComponent>(UserComponent.key).getCountriesManager();
+    CountriesManager countriesManager = context.get<UserComponent>(UserComponent.key)();
     context.response().end((bc) => SearchCountriesScreen(countriesManager));
   }
 

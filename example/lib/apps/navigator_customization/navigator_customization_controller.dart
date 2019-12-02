@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:routex/routex.dart';
 
 import 'navigator_customization_screen.dart';
@@ -52,8 +51,8 @@ class NavigatorCustomizationController implements Controller {
       ));
 
   Widget _template(String title, BuildContext context, Widget content) =>
-      PlatformScaffold(
-        appBar: PlatformAppBar(
+      Scaffold(
+        appBar: AppBar(
           title: Text(title),
         ),
         body: content,

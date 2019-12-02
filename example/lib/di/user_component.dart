@@ -1,19 +1,23 @@
-import '../model/countries_manager.dart';
-import '../model/country.dart';
-import '../model/user.dart';
+import 'package:daggerito/daggerito.dart';
+import 'package:example/di/user_module.dart';
 
-class UserComponent {
+import 'app_component.dart';
+
+class UserComponent extends SubComponent {
   static final String key = "user_component";
 
-  final User user;
+  UserComponent._(AppComponent appComponent, UserModule userModule)
+      : super(
+          [appComponent],
+          modules: [userModule],
+        );
 
-  UserComponent._(this.user);
-
-  static Future<UserComponent> create(User user) async => UserComponent._(user);
-
-  CountriesManager getCountriesManager() {
-    var sink = CountriesSink();
-    var viewModel = CountriesViewModel(sink.term, Country.all, SelectionMode.multiSelect);
-    return CountriesManager(sink, viewModel);
-  }
+  static Future<UserComponent> create(
+    AppComponent appComponent,
+    UserModule userModule,
+  ) async =>
+      UserComponent._(
+        appComponent,
+        userModule,
+      );
 }

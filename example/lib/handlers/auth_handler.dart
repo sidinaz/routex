@@ -13,7 +13,7 @@ class AuthHandler implements Handler<RoutingContext> {
     var appComponent = context.get<AppComponent>(AppComponent.key);
     Objects.requireNonNull(appComponent);
 
-    User user = await appComponent.loadUser();
+    User user = appComponent.getUser();
 
     if (user != null) {
       context.put(User.key, user);

@@ -2,13 +2,14 @@
 [![pub](https://img.shields.io/pub/v/routex?color=orange)](https://pub.dev/packages/routex) [![pub](https://img.shields.io/github/last-commit/sidinaz/routex)](https://pub.dev/packages/routex)  
  
 Identify your logic with URI, apply any number of composable asynchronous or synchronous handlers using intuitive syntax and return anything as a result, all that with powerful and flexible error handling and testing.
-## 1.0.5
+### Since 1.0.5 version:
 * Route with regex:  
 ```dart
 router
   .routeWithRegex(r"^\/images\/(?<name>[a-zA-Z0-9]+).(jpg|png|gif|bmp)$")
   .handler((context) => context.response().end(context.getParam("name")));
 ```
+[Route with regex tests](https://github.com/sidinaz/routex/tree/master/test/route_with_regex_test.dart)
 * Mount sub-router:  
 ```dart
 //support old CountriesController
@@ -17,6 +18,7 @@ router
   countriesController.bindRouter(subRouter);
   router.mountSubRouter("/v1", subRouter);
 ```
+[Mount sub-router tests](https://github.com/sidinaz/routex/tree/master/test/mount_subrouter_test.dart)
 ## Routex in action
 Example app has built in parallel with framework, and it has over 20+ examples, designed to show framework capabilities, composition, error handling, and RoutexNavigator - Routex consumer ready to use in your app.  
 

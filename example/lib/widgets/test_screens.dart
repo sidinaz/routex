@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:routex/routex.dart';
 
 class TestStartScreen extends StatelessWidget {
-  final Function _go;
   final Function logoutAction;
 
-  TestStartScreen(this._go,{this.logoutAction});
+  TestStartScreen({this.logoutAction});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class TestStartScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         RaisedButton(child: Text("Test for result",style: Theme.of(context).textTheme.body1),
-          onPressed: () => _go(context),
+          onPressed: () => RoutexNavigator.shared.push("/app/test/result", context, { "build_context": context}),
         ),
         RaisedButton(child:
         Text("Log out", style: Theme.of(context).textTheme.body1),

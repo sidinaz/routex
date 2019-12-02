@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:routex/routex.dart';
 
-
 class MainScreen extends StatefulWidget {
   @override
   _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   int _selectedIndex = 0;
   List<Widget> _tabs;
 
@@ -26,6 +26,7 @@ class _MainScreenState extends State<MainScreen> {
 //      RoutexNavigator.shared.get("/v1/app/countries/")(context),
       RoutexNavigator.shared.get("/app/countries/")(context),
       RoutexNavigator.shared.get("/app/examples/")(context),
+      RoutexNavigator.shared.get("/app/posts/")(context),
     ];
   }
 
@@ -51,7 +52,11 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.sentiment_satisfied),
             title: Text("Examples"),
-          )
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.create),
+            title: Text("Posts"),
+          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Theme.of(context).accentColor,

@@ -1,5 +1,8 @@
 import 'package:routex/routex.dart';
+
 import '../di/app_component.dart';
+import '../di/common_module.dart';
+import '../di/net_module.dart';
 
 class AppComponentHandler implements Handler<RoutingContext> {
   //every time each handler is executed, tips:
@@ -7,7 +10,8 @@ class AppComponentHandler implements Handler<RoutingContext> {
   //and any other component create every time when you request some route.
   static AppComponent _component;
 
-  Future<AppComponent> _getComponent() async => _component ??= await AppComponent.create();
+  Future<AppComponent> _getComponent() async =>
+      _component ??= await AppComponent.create(CommonModule(), NetModule());
 
   @override
   Future<void> handle(RoutingContext context) async {
