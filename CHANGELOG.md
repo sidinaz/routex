@@ -1,3 +1,5 @@
+## 1.0.7
+* Dependencies and docs update
 ## 1.0.6
 * Navigator customization options
 ```dart

@@ -11,7 +11,6 @@ import 'package:routex/src/route.dart';
 import 'package:routex/src/routing_context.dart';
 import 'package:routex/src/routing_request.dart';
 
-//
 class RouteImpl implements Route {
   final RouterImpl _router;
   int order;
