@@ -7,11 +7,8 @@ import 'user_component.dart';
 class PostsComponent extends SubComponent {
   PostsComponent(
     UserComponent userComponent,
-    PostsModule postsModule,
   ) : super(
           [userComponent],
-          modules: [postsModule],
+          modules: [PostsModule()],
         );
-
-  PostsManager getPostsManager() => this();
 }

@@ -4,6 +4,7 @@ import '../model/user.dart';
 
 class AuthHandler implements Handler<RoutingContext> {
   final String redirectTo;
+  static User _user;
 
   AuthHandler({this.redirectTo});
 
@@ -13,10 +14,13 @@ class AuthHandler implements Handler<RoutingContext> {
     var appComponent = context.get<AppComponent>(AppComponent.key);
     Objects.requireNonNull(appComponent);
 
-    User user = appComponent.getUser();
+    if(context.params().containsKey(User.key)){
+      _user = context.getParam(User.key);
+      context.put(User.key, _user);
+    }
 
-    if (user != null) {
-      context.put(User.key, user);
+    if (_user != null) {
+      context.put(User.key, _user);
       context.next();
     } else {
       if (redirectTo != null) {

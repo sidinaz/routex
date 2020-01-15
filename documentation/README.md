@@ -2,8 +2,6 @@ About this document
 ========
 Each important topic will have it's own page in this documentation folder.
 
-Documentation will cover example app, for now watch in code comments, documentation should be finished in first half of November.
-
 # Basics
 This is just short mention of some core functionalities implemented in detail in example app.
 

@@ -4,7 +4,6 @@ import 'package:routex/src/exceptions/response_status_exception.dart';
 import 'package:routex/src/impl/routing_request_impl.dart';
 import 'package:routex/src/router.dart';
 import 'package:routex/src/widgets/routex_navigator_error_screen.dart';
-import 'package:rxdart/rxdart.dart';
 
 class RoutexNavigator {
   final Router _router;
@@ -80,9 +79,9 @@ class RoutexNavigator {
   WidgetBuilder get(String path, [Map<String, dynamic> params]) =>
       asWidgetBuilder(path, params);
 
-  Observable<WidgetBuilder> asWidgetBuilderStream(String path,
+  Stream<WidgetBuilder> asWidgetBuilderStream(String path,
           [Map<String, dynamic> params]) =>
-      Observable.fromFuture(asWidgetBuilderFuture(path, params));
+      asWidgetBuilderFuture(path, params).asStream();
 
   Widget _futureObserver(Future<WidgetBuilder> wb) => futureBuilder != null
       ? futureBuilder(wb)

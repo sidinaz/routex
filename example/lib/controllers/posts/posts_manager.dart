@@ -9,18 +9,18 @@ class PostsManager {
   PostsManager._(this.sink, this.viewModel);
 
   factory PostsManager.create(PostApi postApi) {
-    print("Creating manager");
     var sink = _Sink();
-    var viewModel = PostsViewModel.create(sink._page, postApi);
+    var viewModel = PostsViewModel.create(sink._page, sink._rowIndex, postApi);
     return PostsManager._(sink, viewModel);
   }
 }
 
 class _Sink {
   // ignore: close_sinks
-  final BehaviorSubject<int> _page = BehaviorSubject.seeded(0);
+  final BehaviorSubject<int> _page = BehaviorSubject();
+  final BehaviorSubject<int> _rowIndex = BehaviorSubject.seeded(-1);
 
-  void setPage(int value){
-    _page.sink.add(value);
-  }
+  void addPage(double value) => _page.add(value.toInt());
+
+  void addRowIndex(int value) => _rowIndex.add(value);
 }

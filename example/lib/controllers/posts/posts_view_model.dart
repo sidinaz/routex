@@ -1,38 +1,54 @@
+import 'package:example/base/rows_to_page_reducer.dart';
+import 'package:example/base/view_model.dart';
+import 'package:example/model/post.dart';
 import 'package:example/model/post_api.dart';
 import 'package:example/model/post_list.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tuple/tuple.dart';
-//
-class PostsViewModel {
-  final Observable<Tuple2<bool, PostsList>> Function() isLoading_PostsList$;
-  CompositeSubscription compositeSubscription = CompositeSubscription();
 
-  PostsViewModel._(this.isLoading_PostsList$);
+//
+class PostsViewModel extends BaseViewModel {
+  static const int ItemsPerPage = 10;
+  final Stream<Tuple2<bool, PostsList>> Function() isLoading_PostsList$ = null;
+  final Stream<PostsList> _postsStream;
+  final BehaviorSubject<List<Post>> _postsSubject;
+  final Stream<int> currentPage;
+
+  get posts => _postsSubject;
+
+  PostsViewModel._(this._postsStream, this._postsSubject, this.currentPage);
 
   factory PostsViewModel.create(
-    Observable<int> page,
+    Stream<int> page,
+    Stream<int> rowIndex,
     PostApi postApi,
   ) {
     // ignore: close_sinks
-    var isLoading = BehaviorSubject.seeded(false);
+    final postSubject = BehaviorSubject<List<Post>>.seeded([]);
+    //suport for changing page with slider value or with scrolling list by changing row index
+    final _page = Rx.merge([
+      page.debounce(
+          (_) => TimerStream(true, const Duration(milliseconds: 200)))
+      .distinct()
+      .doOnData((_) => postSubject.value = []),
+      rowIndex.getNewPageFromRowIndex(
+        itemsPerPage: ItemsPerPage,
+        initialValue: postSubject.value.length ~/ ItemsPerPage,
+      ),
+    ]).shareValue();
 
-    Observable<Tuple2<bool, PostsList>> Function() isLoading_PostsList$ =
-    () =>         Observable.combineLatest2(
-      isLoading
-        .distinct(),
-      page
-        .distinct()
-        .throttle((_) => TimerStream(true, const Duration(milliseconds: 500)))
-        .doOnData((_) => isLoading.value = true)
-        .flatMap(
-          (page) => Observable.fromFuture(postApi.getPostsByPage(page)))
-        .doOnEach((_) => isLoading.value = false),
-        (e, p) => Tuple2(e, p),
-    );
-    return PostsViewModel._(isLoading_PostsList$);
+    final postsStream = _page
+        .flatMap((page) => postApi.getPostsByPage(page).asStream());
+
+    return PostsViewModel._(postsStream, postSubject, _page);
   }
 
-  void dispose() {
-    compositeSubscription = CompositeSubscription();
+  @override
+  void start() {
+    disposeBag.add(_postsStream.listen(setItems));
+  }
+
+  void setItems(PostsList postsList) {
+    this._postsSubject.add([...this._postsSubject.value, ...postsList()]);
   }
 }

@@ -3,9 +3,8 @@ import 'package:routex/routex.dart';
 import '../model/user.dart';
 
 class LoginScreen extends StatelessWidget {
-  final Function setUser;
 
-  LoginScreen(this.setUser);
+  LoginScreen();
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +13,7 @@ class LoginScreen extends StatelessWidget {
       body: Center(child:
       RaisedButton(child: Text("Login",style: Theme.of(context).textTheme.body1),
         onPressed: (){
-          setUser(User("Flutter user"));
-          RoutexNavigator.shared.replaceRoot("/app/main", context);
+          RoutexNavigator.shared.replaceRoot("/app/main", context, {"user" : User("Flutter user")});
         },
       ),
       ),

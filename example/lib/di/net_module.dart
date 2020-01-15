@@ -24,8 +24,8 @@ class NetModule implements Module {
   ) =>
       Dio()
         ..options.baseUrl = "http://jsonplaceholder.typicode.com"
-        ..options.connectTimeout = 300
-        ..options.receiveTimeout = 500
+        ..options.connectTimeout = 3000
+        ..options.receiveTimeout = 5000
         ..options.headers = {'Content-Type': 'application/json; charset=utf-8'}
         ..interceptors.add(logInterceptor)
         ..interceptors.add(customInterceptor);

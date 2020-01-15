@@ -13,5 +13,6 @@ class PostsList {
     return PostsList(posts);
   }
 
+
   List<Post> call() => posts;
 }

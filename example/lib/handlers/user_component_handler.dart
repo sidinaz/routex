@@ -5,22 +5,21 @@ import 'package:routex/routex.dart';
 import '../di/user_component.dart';
 import '../model/user.dart';
 
-//
 class UserComponentHandler implements Handler<RoutingContext> {
   static UserComponent _component;
 
-  Future<UserComponent> _getComponent(
-          AppComponent appComponent, User user) async =>
-      _component ??= await UserComponent.create(appComponent, UserModule(user));
-
   @override
   Future<void> handle(RoutingContext context) async {
-    var component = await _getComponent(
-      context.get(AppComponent.key),
-      context.get(User.key),
-    );
+    User user;
 
-    context.put(UserComponent.key, component);
+    if(context.params().containsKey(User.key)){
+      user = context.getParam(User.key);
+      if(user != null){
+        _component = UserComponent(context.get(AppComponent.key), user);
+      }
+    }
+
+    context.put(UserComponent.key, _component);
     context.next();
   }
 }

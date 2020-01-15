@@ -26,8 +26,9 @@ class PostApi {
     }
   }
 
-  Future<PostsList> getPostsByPage(int page ,[int limit = 10]) async =>
-    PostsList(_slice((await getPosts()).posts, page * limit, page * limit + limit));
+  Future<PostsList> getPostsByPage(int page, [int limit = 10]) async =>
+      PostsList(
+          _slice((await getPosts()).posts, page * limit, page * limit + limit));
 
   Future<Post> getPost(int id) async {
     try {
@@ -38,12 +39,13 @@ class PostApi {
       throw e;
     }
   }
-  /*
+/*
   * List slice(List list, int begin, [int end]) =>
     list.getRange(begin, end == null ? list.length : end < 0 ? list.length + end : end).toList();
   * */
 }
 
-
-List _slice(List list, int begin, [int end]) =>
-  list.getRange(begin, end == null ? list.length : end < 0 ? list.length + end : end).toList();
+List _slice(List list, int begin, [int end]) => list
+    .getRange(
+        begin, end == null ? list.length : end < 0 ? list.length + end : end)
+    .toList();

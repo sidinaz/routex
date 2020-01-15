@@ -1,3 +1,5 @@
+## 1.0.8
+* Dependencies update
 ## 1.0.7
 * Dependencies and docs update
 ## 1.0.6

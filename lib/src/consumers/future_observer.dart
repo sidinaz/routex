@@ -13,6 +13,6 @@ class FutureObserver<T> extends Observer<T> {
       : super(
             onError: onError,
             onSuccess: onSuccess,
-            stream: Observable.fromFuture(future).shareValue(),
+            stream: future.asStream().shareValue(),
             onWaiting: onWaiting);
 }

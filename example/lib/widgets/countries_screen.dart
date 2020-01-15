@@ -1,47 +1,34 @@
+import 'package:example/base/view.dart';
 import 'package:flutter/material.dart';
 import 'package:routex/routex.dart';
 import 'package:simple_search_bar/simple_search_bar.dart';
 import '../model/countries_manager.dart';
 import '../model/country.dart';
 
-class CountriesScreen extends StatefulWidget {
-  final CountriesManager _manager;
+// ignore: must_be_immutable
+class CountriesScreen extends BaseView {
+  final CountriesManager manager;
+  @override
+  get model => manager.viewModel;
 
-  CountriesScreen(this._manager);
+  CountriesScreen(this.manager);
 
   @override
-  _CountriesScreenState createState() => _CountriesScreenState();
-}
-
-class _CountriesScreenState extends State<CountriesScreen> {
-  @override
-  void initState() {
-    super.initState();
-    widget._manager.viewModel.start();
-  }
-
-  @override
-  void dispose() {
-    widget._manager.viewModel.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget buildWidget(BuildContext context) {
     return Scaffold(
-      appBar: CustomSearchAppBar.appBar(context, widget._manager.sink.setTerm),
+      appBar: CustomSearchAppBar.appBar(context, manager.sink.setTerm),
       body: Observer<List<CountryPresentation>>(
-        stream: widget._manager.viewModel.countries,
+        stream: manager.viewModel.countries,
         onSuccess: (ctx, items) => ListView.builder(
             itemBuilder: (context, index) =>    Card(
               color: !items[index].isSelected
                   ? Theme.of(context).primaryColor
                   : Theme.of(context).accentColor,
               child: ListTile(
-                onTap: () => widget._manager.viewModel.handleSelection(model: items[index]),
+                onTap: () => manager.viewModel.handleSelection(model: items[index]),
                 title: Text(items[index].name),
                 trailing: IconButton(icon: Icon(Icons.arrow_forward),
-                  onPressed: () => RoutexNavigator.shared.push("/app/country-details", context, {"model" : items[index]})),
+                  onPressed: () => RoutexNavigator.shared.push("/app/countries/country-details", context, {"model" : items[index]})),
               ),
             ),
           itemCount: items.length,

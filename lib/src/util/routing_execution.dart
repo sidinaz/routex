@@ -11,5 +11,5 @@ class RoutingExecution<T> {
     return _context.response().materialize();
   }
 
-  Observable<T> asStream() => Observable.fromFuture(asFuture());
+  Stream<T> asStream() => asFuture().asStream();
 }

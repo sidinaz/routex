@@ -46,7 +46,7 @@ class TipsApp extends StatelessWidget {
 
   void handleAnotherAsyncCode(RoutingContext context) {
     //IMPORTANT!!!
-    //As seen in handleFutureWithoutAsyncAwaitExample we can execute async code in sync handlers(void type) but
+    // As seen in handleFutureWithoutAsyncAwaitExample we can execute async code in sync handlers(void type) but
     //we must not throw errors like this: throw something in async rxdart's on error handler.
     //This is possible because only context.next can trigger next handler, that means
     //In this scenario we must always use context.fail(something) because throwing something will lead to unhandled exceptions.
@@ -55,7 +55,7 @@ class TipsApp extends StatelessWidget {
     //https://dart.dev/codelabs/async-await#handling-errors
     //https://dart.dev/tutorials/language/streams
     //https://github.com/ReactiveX/rxdart
-    Observable.just(context.get<String>(
+    Stream.value(context.get<String>(
       "change_this_to_message")) //change_this_to_message to success
       .map((value) => Objects.requireNonNull(value))
       .listen((value) => context.next(),

@@ -1,11 +1,11 @@
+import 'package:example/base/view_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'country.dart';
 
-class CountriesViewModel {
-  CompositeSubscription compositeSubscription = CompositeSubscription();
+class CountriesViewModel extends BaseViewModel {
   final List<CountryPresentation> _allCountries;
-  final Observable<List<CountryPresentation>> _filteredCountries;
+  final Stream<List<CountryPresentation>> _filteredCountries;
   final BehaviorSubject<List<CountryPresentation>> _filteredCountriesSubject = BehaviorSubject();
   final SelectionMode selectionMode;
   // ignore: close_sinks
@@ -13,10 +13,10 @@ class CountriesViewModel {
   final BehaviorSubject<List<CountryPresentation>> selectedCountries = BehaviorSubject
     .seeded([]);
 
-  Observable<List<CountryPresentation>> get countries =>
+  Stream<List<CountryPresentation>> get countries =>
     _filteredCountriesSubject;
 
-  CountriesViewModel(Observable<String> searchTerm,
+  CountriesViewModel(Stream<String> searchTerm,
     List<CountryPresentation> countries,
     this.selectionMode)
     : _allCountries = countries,
@@ -37,9 +37,9 @@ class CountriesViewModel {
     var subscription3 = selectedCountries
       .map((cts) => cts.length > 0)
       .listen((hs) => hasSelection.value = hs);
-    compositeSubscription.add(subscription);
-    compositeSubscription.add(subscription2);
-    compositeSubscription.add(subscription3);
+    disposeBag.add(subscription);
+    disposeBag.add(subscription2);
+    disposeBag.add(subscription3);
   }
 
   void handleSelection({bool clearAll = false, CountryPresentation model}) {
@@ -54,10 +54,6 @@ class CountriesViewModel {
 
     //subject is unaware of in memory changes of data that it is referencing to, so we repush same reference to the stream
     _filteredCountriesSubject.value = _filteredCountriesSubject.value;
-  }
-
-  void dispose() {
-    compositeSubscription = CompositeSubscription();
   }
 }
 

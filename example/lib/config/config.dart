@@ -1,15 +1,11 @@
+import 'package:example/controllers/posts/view_type.dart';
+
 class Config{
-  static final Config shared = Config._();
+  var _postsScreenType = PostsScreenType.withSlider;
 
-  final AppMode _appMode = AppMode.DEVELOPMENT;
-  final String initialRoute = "/app/main/";
+  get postsScreenType => _postsScreenType;
 
-  Config._();
-
-  bool get isDevelopmentMode => _appMode == AppMode.DEVELOPMENT;
-
-}
-
-enum AppMode{
-  DEVELOPMENT, PRODUCTION
+  setPostsScreenType(value) {
+    _postsScreenType = value;
+  }
 }

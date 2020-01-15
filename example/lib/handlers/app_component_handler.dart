@@ -11,7 +11,7 @@ class AppComponentHandler implements Handler<RoutingContext> {
   static AppComponent _component;
 
   Future<AppComponent> _getComponent() async =>
-      _component ??= await AppComponent.create(CommonModule(), NetModule());
+      _component ??= await AppComponent.create();
 
   @override
   Future<void> handle(RoutingContext context) async {
