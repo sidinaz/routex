@@ -7,13 +7,13 @@ import 'view_model.dart';
 
 // ignore: must_be_immutable
 abstract class BaseView<T extends BaseViewModel> extends HookWidget {
+  _Fields _managedFields;
   ValueNotifier<int> stateTrigger;
   T model;
-  _Fields managedFields;
 
-  CompositeSubscription get disposeBag => managedFields.disposeBag;
+  CompositeSubscription get disposeBag => _managedFields.disposeBag;
 
-  Mounted get mounted => managedFields.mounted;
+  bool get mounted => _managedFields.mounted;
 
   get managedField => useMemoized;
 
@@ -29,7 +29,8 @@ abstract class BaseView<T extends BaseViewModel> extends HookWidget {
   }
 
   WidgetBuilder managedView(String path, [Map<String, dynamic> params]) =>
-      managedFields.managedViews[path] ??= RoutexNavigator.shared.get(path, params);
+      _managedFields.managedViews[path] ??=
+          RoutexNavigator.shared.get(path, params);
 
   //explicitly update state when working with non reactive data
   void setState([VoidCallback fn]) {
@@ -46,7 +47,7 @@ abstract class BaseView<T extends BaseViewModel> extends HookWidget {
 
   void _handleManagedFields() {
     stateTrigger = useState(0);
-    managedFields = managedField(() => _Fields());
+    _managedFields = managedField(() => _Fields());
     handleManagedFields();
   }
 
@@ -54,7 +55,7 @@ abstract class BaseView<T extends BaseViewModel> extends HookWidget {
     if (model != null) {
       model.start();
     }
-    mounted.setIsMounted(true);
+    _managedFields.mounted = true;
     componentDidMount();
   }
 
@@ -62,7 +63,7 @@ abstract class BaseView<T extends BaseViewModel> extends HookWidget {
     if (model != null) {
       model.dispose();
     }
-    mounted.setIsMounted(false);
+    _managedFields.mounted = false;
     disposeBag.clear();
     componentWillUnmount();
     print("componentWillUnmount ${this.toString()}");
@@ -73,7 +74,6 @@ abstract class BaseView<T extends BaseViewModel> extends HookWidget {
     return _componentWillUnmount;
   }
 
-  //
   void handleManagedFields() {}
 
   void componentDidMount() {}
@@ -81,16 +81,8 @@ abstract class BaseView<T extends BaseViewModel> extends HookWidget {
   void componentWillUnmount() {}
 }
 
-class Mounted {
-  bool isMounted = false;
-
-  void setIsMounted(bool mounted) => isMounted = mounted;
-
-  bool call() => isMounted;
-}
-
-class _Fields<T extends BaseViewModel> {
+class _Fields {
   final CompositeSubscription disposeBag = CompositeSubscription();
   final Map<String, WidgetBuilder> managedViews = Map();
-  final Mounted mounted = Mounted();
+  var mounted = false;
 }

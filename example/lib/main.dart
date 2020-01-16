@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:routex/routex.dart';
 
 import 'apps/navigator_customization/custom_navigator.dart';
+import 'controllers/animation/animation_with_hooks_controller.dart';
 import 'controllers/countries_controller.dart';
 import 'controllers/examples_controller.dart';
 import 'controllers/posts_controller.dart';
@@ -62,6 +63,7 @@ void bindRouter(Router router) {
     SearchCountriesController(),
     ExamplesController(),
     PostsController(),
+    AnimationWithHooksController(),
   ];
 
   controllers.forEach((controller) => controller.bindRouter(router));
@@ -100,6 +102,8 @@ class AppWidget extends BaseView {
       theme: AppTheme.instance,
       home: managedView(
         "/app/main/",
+//        "/app/animation/with-tabs",
+//        "/app/animation/",
         //comment to start with login screen
         {"user": User("Flutter user")},
       )(context),

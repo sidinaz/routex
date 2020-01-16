@@ -1,5 +1,6 @@
 import 'package:example/base/view.dart';
 import 'package:example/config/config.dart';
+import 'package:example/controllers/animation/data/animation_screen_type.dart';
 import 'package:example/controllers/posts/view_type.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +12,6 @@ class TestStartScreen extends BaseView {
   final Config config;
   _TestStartScreenFields fields;
 
-  get postsScreenType => fields.postsScreenType;
-
   TestStartScreen(this.config);
 
   @override
@@ -20,38 +19,60 @@ class TestStartScreen extends BaseView {
         appBar: AppBar(
           title: Text("Test"),
         ),
-        body: Container(
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              RaisedButton(
-                child: Text("Test for result",
+        body: SingleChildScrollView(
+          child: Container(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(
+                  height: 20,
+                ),
+                RaisedButton(
+                  child: Text("Test for result",
                     style: Theme.of(context).textTheme.body1),
-                onPressed: () => RoutexNavigator.shared.push(
+                  onPressed: () => RoutexNavigator.shared.push(
                     "/app/test/result", context, {"build_context": context}),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              RaisedButton(
-                child:
-                    Text("Log out", style: Theme.of(context).textTheme.body1),
-                onPressed: () => logoutAction(context),
-                color: Theme.of(context).primaryColor,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text("Choose posts screen type"),
-              SizedBox(
-                height: 5,
-              ),
-              Observer(
-                stream: postsScreenType,
-                onSuccess: (ctx, type) => _typesSegmentedControl(type),
-              )
-            ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                RaisedButton(
+                  child:
+                  Text("Log out", style: Theme.of(context).textTheme.body1),
+                  onPressed: () => logoutAction(context),
+                  color: Theme.of(context).primaryColor,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text("Choose posts screen type"),
+                SizedBox(
+                  height: 5,
+                ),
+                Observer(
+                  stream: fields.postsScreenTypeSubject,
+                  onSuccess: (ctx, type) => _typesSegmentedControl(type),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text("Choose animation screen type"),
+                SizedBox(
+                  height: 5,
+                ),
+                Observer(
+                  stream: fields.animationScreenTypeSubject,
+                  onSuccess: (ctx, type) => _animationTypesSegmentedControl(type),
+                ),
+                RaisedButton(
+                  child:
+                  Text("Animation screen", style: Theme.of(context).textTheme.body1),
+                  onPressed: () => goToAnimationScreen(context),
+                  color: Theme.of(context).primaryColor,
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -66,7 +87,7 @@ class TestStartScreen extends BaseView {
         .pushReplacement("/app/main", context, {"user": null});
   }
 
-  final Map<PostsScreenType, Widget> _types = const <PostsScreenType, Widget>{
+  final _types = const <PostsScreenType, Widget>{
     PostsScreenType.withSlider: Padding(
       padding: EdgeInsets.all(5),
       child: Text('with Slider'),
@@ -74,6 +95,21 @@ class TestStartScreen extends BaseView {
     PostsScreenType.withScrolling: Padding(
       padding: EdgeInsets.all(5),
       child: Text('with Scrolling'),
+    ),
+  };
+
+  final _animationTypes = const <AnimationScreenType, Widget>{
+    AnimationScreenType.withTabs: Padding(
+      padding: EdgeInsets.all(5),
+      child: Text('Tabs'),
+    ),
+    AnimationScreenType.withStatefulWidget: Padding(
+      padding: EdgeInsets.all(5),
+      child: Text('Stateful'),
+    ),
+    AnimationScreenType.withHookWidget: Padding(
+      padding: EdgeInsets.all(5),
+      child: Text('Hook'),
     ),
   };
 
@@ -87,18 +123,42 @@ class TestStartScreen extends BaseView {
         borderColor: Color(0xFF2C3E50),
       );
 
+  Widget _animationTypesSegmentedControl(AnimationScreenType value) =>
+    CupertinoSegmentedControl<AnimationScreenType>(
+      children: _animationTypes,
+      onValueChanged: setAnimationScreenType,
+      groupValue: value,
+      selectedColor: Color(0xFFf4b512),
+      unselectedColor: Colors.white,
+      borderColor: Color(0xFF2C3E50),
+    );
+
   void setPostsScreenType(PostsScreenType type) {
-    postsScreenType.add(type);
+    fields.postsScreenTypeSubject.add(type);
     config.setPostsScreenType(type);
+  }
+  void setAnimationScreenType(AnimationScreenType type) {
+    fields.animationScreenTypeSubject.add(type);
+    config.setAnimationScreenType(type);
+  }
+
+  void goToAnimationScreen(BuildContext context) {
+    if(config.animationScreenType == AnimationScreenType.withTabs){
+      RoutexNavigator.shared.push("/app/animation/with-tabs", context);
+    }else{
+      RoutexNavigator.shared.push("/app/animation/", context);
+    }
   }
 }
 
 class _TestStartScreenFields {
   // ignore: close_sinks
-  final BehaviorSubject<PostsScreenType> postsScreenType;
+  final BehaviorSubject<PostsScreenType> postsScreenTypeSubject;
+  final BehaviorSubject<AnimationScreenType> animationScreenTypeSubject;
 
   _TestStartScreenFields(Config config)
-      : this.postsScreenType = BehaviorSubject.seeded(config.postsScreenType);
+      : this.postsScreenTypeSubject = BehaviorSubject.seeded(config.postsScreenType),
+       this.animationScreenTypeSubject = BehaviorSubject.seeded(config.animationScreenType);
 }
 
 class TestResultScreen extends StatelessWidget {

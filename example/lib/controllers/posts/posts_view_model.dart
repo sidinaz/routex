@@ -4,12 +4,10 @@ import 'package:example/model/post.dart';
 import 'package:example/model/post_api.dart';
 import 'package:example/model/post_list.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tuple/tuple.dart';
 
 //
 class PostsViewModel extends BaseViewModel {
   static const int ItemsPerPage = 10;
-  final Stream<Tuple2<bool, PostsList>> Function() isLoading_PostsList$ = null;
   final Stream<PostsList> _postsStream;
   final BehaviorSubject<List<Post>> _postsSubject;
   final Stream<int> currentPage;
@@ -25,7 +23,7 @@ class PostsViewModel extends BaseViewModel {
   ) {
     // ignore: close_sinks
     final postSubject = BehaviorSubject<List<Post>>.seeded([]);
-    //suport for changing page with slider value or with scrolling list by changing row index
+    //support for changing page with slider value or with scrolling list by changing row index
     final _page = Rx.merge([
       page.debounce(
           (_) => TimerStream(true, const Duration(milliseconds: 200)))

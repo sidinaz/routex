@@ -1,4 +1,5 @@
 import 'package:daggerito/daggerito.dart';
+import 'package:example/controllers/animation/animation_module.dart';
 import 'package:example/di/test_module.dart';
 import 'package:example/di/user_module.dart';
 import 'package:example/model/user.dart';
@@ -11,7 +12,9 @@ class UserComponent extends SubComponent {
   UserComponent(AppComponent appComponent, User user)
       : super(
           [appComponent],
-          modules: [UserModule(user), TestModule(),
+          modules: [
+            UserModule(user),
+            TestModule(),
           ],
         );
 }

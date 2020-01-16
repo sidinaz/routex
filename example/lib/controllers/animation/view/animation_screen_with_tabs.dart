@@ -5,16 +5,18 @@ import 'package:routex/routex.dart';
 import 'package:rxdart/rxdart.dart';
 
 // ignore: must_be_immutable
-class MainScreen extends BaseView {
+class AnimationScreenWithTabs extends BaseView {
+  final List<WidgetBuilder> tabsWbs;
   _Fields fields;
+
+  AnimationScreenWithTabs(this.tabsWbs);
 
   @override
   void handleManagedFields() {
     final context = useContext();
-    fields = managedField(() => _Fields(context));
+    fields = managedField(() => _Fields(context, tabsWbs));
   }
 
-  @override
   Widget buildWidget(BuildContext context) => Observer<int>(
         stream: fields.selectedTab,
         onSuccess: (ctx, selectedTab) => Scaffold(
@@ -23,20 +25,12 @@ class MainScreen extends BaseView {
               backgroundColor: Theme.of(context).primaryColor,
               items: [
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  title: Text("Test"),
+                  icon: Icon(Icons.favorite),
+                  title: Text("Stateful"),
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.language),
-                  title: Text("Countries"),
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.sentiment_satisfied),
-                  title: Text("Examples"),
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.create),
-                  title: Text("Posts"),
+                  icon: Icon(Icons.favorite_border),
+                  title: Text("Hook"),
                 ),
               ],
               currentIndex: selectedTab,
@@ -56,12 +50,10 @@ class _Fields {
   // ignore: close_sinks
   final selectedTab = BehaviorSubject.seeded(0);
 
-  _Fields(BuildContext context)
-      : this.tabs = [
-          RoutexNavigator.shared.get("/app/test/")(context),
-//    RoutexNavigator.shared.get("/v1/app/countries/")(context),
-          RoutexNavigator.shared.get("/app/countries/")(context),
-          RoutexNavigator.shared.get("/app/examples/")(context),
-          RoutexNavigator.shared.get("/app/posts/")(context),
-        ];
+  _Fields(BuildContext context, List<WidgetBuilder> tabsWbs)
+      : this.tabs = tabsWbs
+            .map((wb) => wb(context))
+            .toList() {
+    print(this.tabs);
+  }
 }

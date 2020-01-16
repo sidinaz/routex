@@ -8,6 +8,7 @@ import 'package:routex/routex.dart';
 // ignore: must_be_immutable
 class PostsScreenWithSlider extends BaseView<PostsViewModel> {
   PostsManager manager;
+  final String title = "Posts with slider";
   
   @override
   get model => manager.viewModel;
@@ -22,22 +23,14 @@ class PostsScreenWithSlider extends BaseView<PostsViewModel> {
 
   @override
   Widget buildWidget(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text("Posts with slider")),
+        appBar: AppBar(title: Text(title)),
         body: Stack(
           children: <Widget>[
             Container(
               width: double.infinity,
               child: Column(
                 children: <Widget>[
-                  Observer<int>(
-                    stream: model.currentPage,
-                    onSuccess: (ctx, currentPage) => Slider(
-                      min: 0,
-                      max: 9,
-                      value: currentPage.toDouble(),
-                      onChanged: sink.addPage,
-                    ),
-                  ),
+                  buildTopControl(),
                   Observer<List<Post>>(
                     stream: model.posts,
                     onSuccess: (ctx, posts) => Expanded(
@@ -54,6 +47,18 @@ class PostsScreenWithSlider extends BaseView<PostsViewModel> {
           ],
         ),
       );
+
+  Widget buildTopControl() {
+    return Observer<int>(
+                  stream: model.currentPage,
+                  onSuccess: (ctx, currentPage) => Slider(
+                    min: 0,
+                    max: 9,
+                    value: currentPage.toDouble(),
+                    onChanged: sink.addPage,
+                  ),
+                );
+  }
 
   Widget buildItem(Post model, int index) => Card(
         elevation: 4,
