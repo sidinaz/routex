@@ -1,3 +1,5 @@
+## 1.0.9
+* Default placeholders update
 ## 1.0.8
 * Dependencies update
 ## 1.0.7

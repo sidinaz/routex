@@ -36,7 +36,6 @@ class AnimationScreenWithStatefulWidgetState
   void dispose() {
     fields.boxController.dispose();
     fields.catController.dispose();
-    fields.boxAnimation.removeStatusListener(fields.animationStatusListener);
     super.dispose();
   }
 }

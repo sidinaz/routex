@@ -36,6 +36,5 @@ class AnimationScreenWithHookWidget extends HookWidget with AnimationMixin {
   }
 
   void componentWillUnmount() {
-    fields.boxAnimation.removeStatusListener(fields.animationStatusListener);
   }
 }
