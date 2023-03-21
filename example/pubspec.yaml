@@ -28,7 +28,7 @@ dependencies:
   routex:
     path: ../
   daggerito:
-  dio:
+  dio: any
   tuple:
 
   # The following adds the Cupertino Icons font to your application.
